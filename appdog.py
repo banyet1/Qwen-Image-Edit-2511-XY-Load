@@ -308,7 +308,9 @@ def infer(
 ):
     gc.collect()
     torch.cuda.empty_cache()
-
+    print("infer() called")
+    print("lora_adapter =", lora_adapter)
+    print("prompt =", prompt)
     pil_images = b64_to_pil_list(images_b64_json)
     if not pil_images:
         raise gr.Error("Please upload at least one image to edit.")
