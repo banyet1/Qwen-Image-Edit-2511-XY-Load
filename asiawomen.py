@@ -78,11 +78,11 @@ ADAPTER_SPECS = {
         "weights": "banyetman.safetensors",
         "adapter_name": "banyetman",
     },
-    "asiawomen": {
-        "url": "https://ai.x39.org/asiawomen/asiawomen.safetensors",
+    "beer": {
+        "url": "https://ai.x39.org/asiawomen/beer.safetensors",
         "repo": LORA_DIR,
-        "weights": "asiawomen.safetensors",
-        "adapter_name": "asiawomen",
+        "weights": "beer.safetensors",
+        "adapter_name": "beer",
     },
     "Anime-V2": {
         "repo": "prithivMLmods/Qwen-Image-Edit-2511-Anime",
@@ -198,7 +198,7 @@ def ensure_adapter_source(spec):
 EXAMPLES_CONFIG = [
     {"images": ["examples/xy8.jpg"],                        "prompt": "Use these concepts in your prompts to activate specific capabilities:\nnsfw nipples vagina penis missionary cowgirlout reversecowgirlpov blowjob cum_on_face creamp1e l1ck",                                                                                           "lora": "XY"},{"images": ["examples/dog.jpg"],                        "prompt": "You should use LoRA/Nude/Sex to trigger the image generation.",                                                                                           "lora": "DOG"},
     {"images": ["examples/ban.jpg"],                        "prompt": "replace the woman with photo of LL9_BANYET_01, middle-aged Asian man, keep the pose, clothing and background unchanged.",                                                                                           "lora": "banyetman"},
-    {"images": ["examples/asiawomen.jpg"],                        "prompt": "replace the woman with photo of zl_ll9_daBxNai_test, nude, keep the pose, clothing and background unchanged.",                                                                                           "lora": "asiawomen"},    
+    {"images": ["examples/asiawomen.jpg"],                        "prompt": "the woman doing LL9_BANYET_02 beer bottle insert to her vaginal, nude, keep the pose, clothing and background unchanged.",                                                                                           "lora": "beer"},    
     {"images": ["examples/HRP.jpg"],                        "prompt": "Transform into a hyper-realistic face portrait.",                                                                 "lora": "Hyper-Realistic-Portrait"},
     {"images": ["examples/A.jpeg"],                         "prompt": "Rotate the camera 45 degrees to the right.",                                                                      "lora": "Multiple-Angles"},
     {"images": ["examples/U.jpg"],                          "prompt": "Upscale this picture to 4K resolution.",                                                                          "lora": "Upscaler"},
@@ -1053,7 +1053,6 @@ function init() {
     }
 
     enforceDarkStyles();
-    setInterval(enforceDarkStyles, 800);
 
     /* GitHub button hover interaction */
     const ghBtn = document.querySelector('.gh-btn');
@@ -1374,7 +1373,7 @@ function watchOutputs() {
     }
     const observer = new MutationObserver(syncImage);
     observer.observe(resultContainer, {childList:true, subtree:true, attributes:true, attributeFilter:['src']});
-    setInterval(syncImage, 800);
+    syncImage();
 }
 watchOutputs();
 
@@ -1389,7 +1388,7 @@ function watchSeed() {
     }
     const obs = new MutationObserver(sync);
     obs.observe(seedContainer, {childList:true, subtree:true, attributes:true, attributeFilter:['value']});
-    setInterval(sync, 1000);
+    sync();
 }
 watchSeed();
 
@@ -1427,7 +1426,7 @@ function watchExampleResults() {
 
     const obs = new MutationObserver(checkResult);
     obs.observe(container, {childList:true, subtree:true, characterData:true, attributes:true});
-    setInterval(checkResult, 500);
+    checkResult();
 }
 watchExampleResults();
 }
