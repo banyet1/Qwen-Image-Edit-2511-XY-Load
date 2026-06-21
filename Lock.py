@@ -68,13 +68,15 @@ ADAPTER_SPECS = {
         "adapter_name": "XY",
     },
     "CNFemale": {
-        "repo": "https://ai.x39.org/lora/cnfemale20.safetensors",
-        "weights": LORA_DIR,
+        "url": "https://ai.x39.org/lora/cnfemale20.safetensors",
+        "repo": LORA_DIR,
+        "weights": "cnfemale20.safetensors",
         "adapter_name": "CNFemale",
     },
     "CNPussy": {
-        "repo": "https://ai.x39.org/lora/cnfemalebodyfix.safetensors",
-        "weights": LORA_DIR,
+        "url": "https://ai.x39.org/lora/cnfemalebodyfix.safetensors",
+        "repo": LORA_DIR,
+        "weights": "cnfemalebodyfix.safetensors",
         "adapter_name": "CNPussy",
     },
     "banyetman": {
