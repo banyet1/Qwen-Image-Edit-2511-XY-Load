@@ -420,7 +420,6 @@ def infer(
         last_seed = seed
         last_out_path = ""
         batch_zip_path = ""
-        progress_text = f"0/{batch_count}"
 
         for idx in range(batch_count):
             current_seed = random.randint(0, MAX_SEED) if randomize_seed else seed + idx
@@ -450,9 +449,8 @@ def infer(
             last_preview = preview_image
             last_seed = current_seed
             last_out_path = out_path
-            progress_text = f"{idx + 1}/{batch_count}"
 
-            yield last_preview, last_seed, last_out_path, "", progress_text
+            yield last_preview, last_seed, last_out_path, ""
 
         if batch_count > 1 and saved_paths:
             batch_zip_name = f"qwen_batch_{datetime.now().strftime('%Y%m%d_%H%M%S')}.zip"
@@ -462,7 +460,7 @@ def infer(
                     zf.write(saved_path, arcname=os.path.basename(saved_path))
             print(f"Batch zip saved to: {batch_zip_path}")
 
-        yield last_preview, last_seed, last_out_path, batch_zip_path, progress_text
+        yield last_preview, last_seed, last_out_path, batch_zip_path
     except Exception as e:
         raise e
 
@@ -1366,9 +1364,7 @@ function init(attempt = 0) {
         const sb = document.querySelector('.sb-fixed');
         if (sb) sb.textContent = 'Processing\u2026';
         if (!window.__baseDocumentTitle) window.__baseDocumentTitle = document.title || 'Qwen Image Edit';
-        const total = window.__qwenBatchTotal || 1;
-        const current = window.__qwenBatchCurrent || 1;
-        document.title = `(${current}/${total}) - ` + window.__baseDocumentTitle;
+        document.title = 'Running - ' + window.__baseDocumentTitle;
     }
     function hideLoader() {
         if (window.__qwenBatchRunning) return;
@@ -1395,11 +1391,8 @@ function init(attempt = 0) {
         const batchSlider = document.getElementById('custom-batch');
         const batchValue = batchSlider ? parseInt(batchSlider.value || '1', 10) : 1;
         window.__qwenBatchRunning = batchValue > 1;
-        window.__qwenBatchTotal = batchValue;
-        window.__qwenBatchCurrent = 1;
         window.__lastBatchZipReadyPath = '';
         setGradioValue('gradio-batch-zip-path', '');
-        setGradioValue('gradio-progress-status', `0/${batchValue}`);
         syncPromptToGradio(); syncImagesToGradio(); syncLoraToGradio(); showLoader();
         setTimeout(() => {
             const gradioBtn = document.getElementById('gradio-run-btn');
@@ -1425,7 +1418,6 @@ function watchOutputs(attempt = 0) {
     const resultContainer = document.getElementById('gradio-result');
     const pathContainer   = document.getElementById('gradio-result-path');
     const batchPathContainer = document.getElementById('gradio-batch-zip-path');
-    const progressContainer = document.getElementById('gradio-progress-status');
     const outBody = document.getElementById('output-image-container');
     const outPh   = document.getElementById('output-placeholder');
     const dlBtn   = document.getElementById('dl-btn-output');
@@ -1446,43 +1438,27 @@ function watchOutputs(attempt = 0) {
             const now = ctx.currentTime;
             const gain = ctx.createGain();
             gain.gain.setValueAtTime(0.0001, now);
-            gain.gain.exponentialRampToValueAtTime(0.14, now + 0.01);
-            gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.42);
+            gain.gain.exponentialRampToValueAtTime(0.18, now + 0.01);
+            gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.65);
             gain.connect(ctx.destination);
 
             const oscA = ctx.createOscillator();
             oscA.type = 'sine';
-            oscA.frequency.setValueAtTime(1318, now);
-            oscA.frequency.exponentialRampToValueAtTime(1046, now + 0.18);
+            oscA.frequency.setValueAtTime(1760, now);
+            oscA.frequency.exponentialRampToValueAtTime(1320, now + 0.22);
             oscA.connect(gain);
             oscA.start(now);
-            oscA.stop(now + 0.20);
+            oscA.stop(now + 0.26);
 
             const oscB = ctx.createOscillator();
-            oscB.type = 'sine';
-            oscB.frequency.setValueAtTime(1760, now + 0.015);
-            oscB.frequency.exponentialRampToValueAtTime(1318, now + 0.22);
+            oscB.type = 'triangle';
+            oscB.frequency.setValueAtTime(2640, now + 0.03);
+            oscB.frequency.exponentialRampToValueAtTime(1760, now + 0.30);
             oscB.connect(gain);
-            oscB.start(now + 0.015);
-            oscB.stop(now + 0.24);
+            oscB.start(now + 0.03);
+            oscB.stop(now + 0.34);
         } catch (e) {
             console.warn('Completion tone failed:', e);
-        }
-    }
-
-    function syncTitleProgress() {
-        const progressEl = progressContainer ? (progressContainer.querySelector('textarea') || progressContainer.querySelector('input')) : null;
-        const progressVal = progressEl ? progressEl.value.trim() : '';
-        if (!progressVal) return;
-        const parts = progressVal.split('/');
-        if (parts.length === 2) {
-            const current = parseInt(parts[0] || '1', 10);
-            const total = parseInt(parts[1] || '1', 10);
-            if (!Number.isNaN(current)) window.__qwenBatchCurrent = current;
-            if (!Number.isNaN(total)) window.__qwenBatchTotal = total;
-        }
-        if (window.__qwenBatchRunning && window.__baseDocumentTitle) {
-            document.title = `Running (${window.__qwenBatchCurrent || 1}/${window.__qwenBatchTotal || 1}) - ` + window.__baseDocumentTitle;
         }
     }
 
@@ -1588,16 +1564,11 @@ function watchOutputs(attempt = 0) {
         const pathObserver = new MutationObserver(syncDownloadButtons);
         pathObserver.observe(pathContainer, {childList:true, subtree:true, characterData:true, attributes:true});
     }
-    if (progressContainer) {
-        const progressObserver = new MutationObserver(syncTitleProgress);
-        progressObserver.observe(progressContainer, {childList:true, subtree:true, characterData:true, attributes:true});
-    }
     if (batchSlider) {
         batchSlider.addEventListener('input', syncDownloadButtons);
         batchSlider.addEventListener('change', syncDownloadButtons);
     }
     syncDownloadButtons();
-    syncTitleProgress();
     syncImage();
 }
 watchOutputs();
@@ -1690,7 +1661,6 @@ with gr.Blocks() as demo:
     result            = gr.Image(elem_id="gradio-result",                       elem_classes="hidden-input", container=False, format="png")
     result_path       = gr.Textbox(value="", elem_id="gradio-result-path",      elem_classes="hidden-input", container=False)
     batch_zip_path    = gr.Textbox(value="", elem_id="gradio-batch-zip-path",   elem_classes="hidden-input", container=False)
-    progress_status   = gr.Textbox(value="", elem_id="gradio-progress-status",  elem_classes="hidden-input", container=False)
 
     example_idx      = gr.Textbox(value="", elem_id="example-idx-input",   elem_classes="hidden-input", container=False)
     example_result   = gr.Textbox(value="", elem_id="example-result-data",  elem_classes="hidden-input", container=False)
@@ -1847,7 +1817,7 @@ with gr.Blocks() as demo:
     run_btn.click(
         fn=infer,
         inputs=[hidden_images_b64, prompt, lora_adapter, seed, randomize_seed, guidance_scale, steps, batch_count],
-        outputs=[result, seed, result_path, batch_zip_path, progress_status],
+        outputs=[result, seed, result_path, batch_zip_path],
         js=r"""(imgs, p, la, s, rs, gs, st, bc) => {
             const images    = window.__uploadedImages || [];
             const b64Array  = images.map(img => img.b64);
