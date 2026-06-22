@@ -361,6 +361,14 @@ def get_dimensions_from_preset(image, resolution_preset):
     preset = (resolution_preset or "Auto").strip()
     if preset == "iPhone 15 Pro Portrait":
         return 944, 2048
+    if preset == "1080p Portrait":
+        return 1080, 1920
+    if preset == "1080p Landscape":
+        return 1920, 1080
+    if preset == "Max Portrait (1152x2048)":
+        return 1152, 2048
+    if preset == "Max Landscape (2048x1152)":
+        return 2048, 1152
     return update_dimensions_on_upload(image)
 
 
@@ -1888,6 +1896,10 @@ with gr.Blocks() as demo:
               <label class="modern-label" for="custom-resolution-preset" style="margin-bottom:8px;">Resolution</label>
               <select id="custom-resolution-preset" class="lora-native-select" style="margin-bottom:14px;">
                 <option value="Auto" selected>Auto</option>
+                <option value="1080p Portrait">1080p Portrait</option>
+                <option value="1080p Landscape">1080p Landscape</option>
+                <option value="Max Portrait (1152x2048)">Max Portrait (1152x2048)</option>
+                <option value="Max Landscape (2048x1152)">Max Landscape (2048x1152)</option>
                 <option value="iPhone 15 Pro Portrait">iPhone 15 Pro Portrait</option>
               </select>
               <div class="slider-row">
