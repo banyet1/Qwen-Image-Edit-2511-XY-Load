@@ -481,8 +481,6 @@ def infer(
             with zipfile.ZipFile(batch_zip_path, "w", compression=zipfile.ZIP_DEFLATED) as zf:
                 for saved_path in saved_paths:
                     zf.write(saved_path, arcname=os.path.basename(saved_path))
-                if os.path.exists(prompt_save_path):
-                    zf.write(prompt_save_path, arcname=os.path.basename(prompt_save_path))
             print(f"Batch zip saved to: {batch_zip_path}")
 
         yield last_preview, last_seed, last_out_path, batch_zip_path, progress_text
